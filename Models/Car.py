@@ -8,15 +8,14 @@ class Car(object):
         self.data.signalChangeBroadcast(self.checkTrafficLightColour)
 
         self.vehicleSpeed = 0
-        self.topSpeed = 120
-        self.speedLimitedTo = 0
-
-        self.accelerationRate = 1
-        self.decelerationRate = 0.5
+        self.topSpeed = 120.0
+        self.haltSpeed = 0.0
+        self.speedLimitedTo = self.haltSpeed
 
         self.roadLengthCovered = 0
         self.distanceFromSignalToStartBreaking = 9999999
         self.failureModeEnabled = False
+
 
     def checkTrafficLightColour(self, signal):
         if signal.name == "Green":
@@ -25,8 +24,9 @@ class Car(object):
             print("Car sees red signal")
         elif signal.name == "Yellow":
             print("Car sees yellow signal")
+        elif signal.name == "Distance":
+            print("Distance :", signal.value)
 
-        self.actionAccordingToTrafficSignalColour(signal)
 
     def checkDistanceToTrafficSignal(self):
         print("Distance remaining")

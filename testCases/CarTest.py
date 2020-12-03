@@ -1,7 +1,7 @@
 import unittest
 from Models.Car import Car
 from Models.TrafficSignal import currentSignal
-from Models.TrafficSignal import TrafficSignalEnum
+from Models.Main import TrafficSignalEnum1
 
 
 class CarTest(unittest.TestCase):
@@ -10,7 +10,7 @@ class CarTest(unittest.TestCase):
         car = Car()
         car.main()
         try:
-            self.assertIsInstance(currentSignal, TrafficSignalEnum)
+            self.assertIsInstance(currentSignal, TrafficSignalEnum1)
             print("Passed")
         except:
             print("Error")

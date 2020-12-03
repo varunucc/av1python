@@ -7,15 +7,15 @@ import enum
 
 class TrafficSignalEnum1(enum.Enum):
     Green = 3
-    Yellow = 6
-    Red = 7
-    Distance = 110
+    Yellow = 2
+    Red = 1
+    locationOnRoad = 4
 
 
-signalList = [TrafficSignalEnum1, TrafficSignalEnum1, TrafficSignalEnum1]
+signalList = [TrafficSignalEnum1, TrafficSignalEnum1]
 
 
-class Road:
+class Main:
 
     def __init__(self):
         print("Starting traffic signal...")
@@ -23,12 +23,12 @@ class Road:
         Car(ts)
         trafficSignalThread = threading.Thread(target=ts.rotateSignals, daemon=True)
         trafficSignalThread.start()
-        trafficSignalThread.join(10000)
+        trafficSignalThread.join(10)
         print("Done.")
 
 
 def main():
-    Road()
+    Main()
 
 
 if __name__ == '__main__':
