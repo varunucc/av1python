@@ -1,20 +1,33 @@
 from Models.TrafficSignal import TrafficSignal
+import threading
 
+distanceToNextSignal = 9999999
+nextTrafficSignalLocationOnRoad = 0
 
 class Car(object):
 
-    def __init__(self, ts):
-        self.data = ts
-        self.data.signalChangeBroadcast(self.checkTrafficLightColour)
-
+    def __init__(self, ts, sp):
         self.vehicleSpeed = 0
-        self.topSpeed = 120.0
+        self.topSpeed = 20.0
         self.haltSpeed = 0.0
-        self.speedLimitedTo = self.haltSpeed
+        self.speedLimitedTo = self.topSpeed
 
         self.roadLengthCovered = 0
         self.distanceFromSignalToStartBreaking = 9999999
         self.failureModeEnabled = False
+
+        self.trafficSignalData = ts
+        self.trafficSignalData.signalChangeBroadcast(self.checkTrafficLightColour)
+        self.trafficSignalData.signalLocationBroadcast(self.checkDistanceToTrafficSignal)
+
+        # Bind changes
+        self.speedControl = sp
+        self.speedControl.notifySpeedChange(self.setVehicleSpeed)
+
+        # Start accelerating
+        self._accelerateThread = threading.Thread(target=self.speedControl.calculateAccelerationRateToLimitedSpeed(
+            self.vehicleSpeed, self.speedLimitedTo), daemon=True)
+        self._accelerateThread.start()
 
 
     def checkTrafficLightColour(self, signal):
@@ -24,12 +37,21 @@ class Car(object):
             print("Car sees red signal")
         elif signal.name == "Yellow":
             print("Car sees yellow signal")
-        elif signal.name == "Distance":
-            print("Distance :", signal.value)
 
 
-    def checkDistanceToTrafficSignal(self):
-        print("Distance remaining")
+    def setRoadLengthCovered(self, speed):
+        print("D")
+
+
+    def checkDistanceToTrafficSignal(self, trafficSignalLocationOnRoad):
+        print("trafficSignalLocation: ", trafficSignalLocationOnRoad)
+        global nextTrafficSignalLocationOnRoad
+        nextTrafficSignalLocationOnRoad = trafficSignalLocationOnRoad
+
+        global distanceToNextSignal
+        distanceToNextSignal = trafficSignalLocationOnRoad - self.roadLengthCovered
+        print("distance from signal: ", distanceToNextSignal)
+
 
     def setSpeedLimitedTo(self, speed):
         print("Incrementing speed.")
@@ -39,3 +61,10 @@ class Car(object):
 
     def failureToReduceSpeedBefore20mtsCheck(self):
         print("Return boolean")
+
+    def setVehicleSpeed(self, changedSpeed):
+        self.vehicleSpeed = changedSpeed
+        global nextTrafficSignalLocationOnRoad
+        self.checkDistanceToTrafficSignal(nextTrafficSignalLocationOnRoad)
+        # TODO calculate road length covered
+        print("Speed of car: ", changedSpeed)

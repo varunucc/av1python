@@ -1,5 +1,6 @@
 from Models.TrafficSignal import TrafficSignal
 from Models.Car import Car
+from Models.SpeedControl import SpeedControl
 import concurrent.futures
 import threading
 import enum
@@ -9,7 +10,7 @@ class TrafficSignalEnum1(enum.Enum):
     Green = 3
     Yellow = 2
     Red = 1
-    locationOnRoad = 4
+    locationOnRoad = 15
 
 
 signalList = [TrafficSignalEnum1, TrafficSignalEnum1]
@@ -20,10 +21,11 @@ class Main:
     def __init__(self):
         print("Starting traffic signal...")
         ts = TrafficSignal(signalList)
-        Car(ts)
+        sp = SpeedControl()
         trafficSignalThread = threading.Thread(target=ts.rotateSignals, daemon=True)
         trafficSignalThread.start()
-        trafficSignalThread.join(10)
+        car = Car(ts, sp)
+        trafficSignalThread.join()
         print("Done.")
 
 
