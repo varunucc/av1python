@@ -1,5 +1,4 @@
 import time
-import os
 
 trafficSignalList = []
 currentSignalLight = ''
@@ -15,22 +14,29 @@ class TrafficSignal(object):
         self.currentSignalDistance = 0
         global trafficSignalList
         self.trafficSignalList = trafficSignals
+        self.signalCounter = 0
 
     def rotateSignals(self):
+        if not len(self.trafficSignalList) > 0:
+            return
         while True:
-            if not len(self.trafficSignalList) > 0:
+            if self.signalCounter >= len(self.trafficSignalList):
                 break
-            for signals in self.trafficSignalList:
-                global signalLocationOnRoad
-                self.signalLocationOnRoad = signals["locationOnRoad"].value
-                print("Been here")
-                for signalLights in signals:
-                    if signalLights.name == "locationOnRoad":
-                        continue
-                    print("Current traffic signal: ", signalLights.name, " Wait time: ", signalLights.value)
-                    global currentSignalLight
-                    self.currentSignalLight = signalLights
-                    time.sleep(signalLights.value)
+            currentSignal = self.trafficSignalList[self.signalCounter]
+            global signalLocationOnRoad
+            self.signalLocationOnRoad = currentSignal["locationOnRoad"].value
+            print("Been here")
+            for signalLights in currentSignal:
+                if signalLights.name == "locationOnRoad":
+                    continue
+                print("Current traffic signal: ", signalLights.name, " Wait time: ", signalLights.value)
+                global currentSignalLight
+                self.currentSignalLight = signalLights
+                time.sleep(signalLights.value)
+
+    def nextSignal(self):
+        if self.signalCounter < len(self.trafficSignalList):
+            self.signalCounter += 1
 
     @property
     def currentSignalLight(self):

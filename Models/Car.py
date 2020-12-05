@@ -62,6 +62,8 @@ class Car(object):
 
     def actionAccordingToTrafficSignalColourAndDistance(self):
         print("Action according called")
+        if self.distanceToNextSignal <= 0:
+            self.trafficSignalData.nextSignal()
         # if self.distanceToNextSignal <= 80:
         #     self.speedControl.accelerating = False
 

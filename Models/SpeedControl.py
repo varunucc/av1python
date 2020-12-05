@@ -3,6 +3,7 @@ import time
 
 changedVehicleSpeed = 0
 
+
 class SpeedControl:
     def __init__(self):
         # print("SpeedControl")
