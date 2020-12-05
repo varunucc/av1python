@@ -5,7 +5,7 @@ class Car(object):
 
     def __init__(self, ts, sp):
         self.vehicleSpeed = 0
-        self.topSpeed = 20.0
+        self.topSpeed = 60.0
         self.haltSpeed = 0.0
         self.speedLimitedTo = self.topSpeed
         self.trafficSignalColour = ''
@@ -27,9 +27,9 @@ class Car(object):
 
         # Start accelerating
         self.speedControl.accelerating = True
-        self._accelerateThread = threading.Thread(target=self.speedControl.calculateAccelerationRateToLimitedSpeed(
+        self.accelerateThread = threading.Thread(target=self.speedControl.calculateAccelerationRateToLimitedSpeed(
             self.vehicleSpeed, self.speedLimitedTo), daemon=True)
-        self._accelerateThread.start()
+        self.accelerateThread.start()
         # self._accelerateThread.join()
 
     def checkTrafficLightColour(self, signalColour):
@@ -64,8 +64,23 @@ class Car(object):
         print("Action according called")
         if self.distanceToNextSignal <= 0:
             self.trafficSignalData.nextSignal()
-        # if self.distanceToNextSignal <= 80:
-        #     self.speedControl.accelerating = False
+        if 20 < self.distanceToNextSignal <= 80:
+            print("Slowing down")
+            self.speedControl.accelerating = False
+            self.speedControl.slowDown = True
+            self.speedLimitedTo = 20
+            slowDownProgramThread = threading.Thread(target=self.speedControl.slowDownVehicleSpeed(
+                self.vehicleSpeed, self.speedLimitedTo, self.distanceToNextSignal), daemon=True)
+            slowDownProgramThread.start()
+        if 0 < self.distanceToNextSignal <= 20:
+            print("Stopping")
+            self.speedControl.accelerating = False
+            self.speedControl.slowDown = False
+            self.speedControl.stop = True
+            self.speedLimitedTo = 0
+            haltProgramThread = threading.Thread(target=self.speedControl.bringVehicleToHalt(
+                self.vehicleSpeed, self.speedLimitedTo, self.distanceToNextSignal), daemon=True)
+            haltProgramThread.start()
 
     def failureToReduceSpeedBefore20mtsCheck(self):
         print("Return boolean")
