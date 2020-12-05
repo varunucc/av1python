@@ -23,7 +23,6 @@ class TrafficSignal(object):
             for signals in self.trafficSignalList:
                 global signalLocationOnRoad
                 self.signalLocationOnRoad = signals["locationOnRoad"].value
-                self.currentSignalDistance = signals["locationOnRoad"].value
                 print("Been here")
                 for signalLights in signals:
                     if signalLights.name == "locationOnRoad":

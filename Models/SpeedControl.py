@@ -3,12 +3,13 @@ import time
 
 changedVehicleSpeed = 0
 
-
 class SpeedControl:
     def __init__(self):
         # print("SpeedControl")
         self._observers = []
         self._changedVehicleSpeed = 0
+        self.accelerating = False
+        self.decelerating = False
 
     def slowDownVehicleSpeed(self, vehicleSpeed, speedLimitedTo):
         self.calculateDecelerationRateToLimitedSpeed(vehicleSpeed, speedLimitedTo)
@@ -26,10 +27,12 @@ class SpeedControl:
 
     def accelerate(self, accelerateRate, speedLimitedTo, vehicleSpeed):
         print("Accelerating..")
-        while vehicleSpeed < speedLimitedTo:
-            time.sleep(1)
+        print("Accelerating value: ", self.accelerating)
+        while self.accelerating:
+            time.sleep(accelerateRate)
             # convert to km/hr
-            vehicleSpeed += 1 * 3.6
+            if vehicleSpeed < speedLimitedTo:
+                vehicleSpeed += 1 * 3.6
             global changedVehicleSpeed
             self.changedVehicleSpeed = vehicleSpeed
             # print("Speed: ", self.changedVehicleSpeed)
