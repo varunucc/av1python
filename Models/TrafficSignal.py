@@ -8,11 +8,11 @@ signalLocationOnRoad = 0
 
 class TrafficSignal(object):
     def __init__(self, trafficSignals):
-        global trafficSignalList
         self._observersTrafficLight = []
         self._observersTrafficSignalLocation = []
         self._currentSignal = ''
         self._signalLocationOnRoad = ''
+        global trafficSignalList
         self.trafficSignalList = trafficSignals
 
     def rotateSignals(self):
@@ -20,11 +20,12 @@ class TrafficSignal(object):
             if not len(self.trafficSignalList) > 0:
                 break
             for signals in self.trafficSignalList:
-                global currentSignal
+                global signalLocationOnRoad
+                self.signalLocationOnRoad = signals["locationOnRoad"].value
+                print("Been here")
                 for signalLights in signals:
                     if signalLights.name == "locationOnRoad":
-                        global signalLocationOnRoad
-                        self.signalLocationOnRoad = signalLights.value
+                        continue
                     print("Current traffic signal: ", signalLights.name, " Wait time: ", signalLights.value)
                     global currentSignal
                     self.currentSignal = signalLights

@@ -18,7 +18,7 @@ class Car(object):
 
         self.trafficSignalData = ts
         self.trafficSignalData.signalChangeBroadcast(self.checkTrafficLightColour)
-        self.trafficSignalData.signalLocationBroadcast(self.checkDistanceToTrafficSignal)
+        self.trafficSignalData.signalLocationBroadcast(self.setTrafficSignalLocation)
 
         # Bind changes
         self.speedControl = sp
@@ -28,6 +28,7 @@ class Car(object):
         self._accelerateThread = threading.Thread(target=self.speedControl.calculateAccelerationRateToLimitedSpeed(
             self.vehicleSpeed, self.speedLimitedTo), daemon=True)
         self._accelerateThread.start()
+        # self._accelerateThread.join()
 
 
     def checkTrafficLightColour(self, signal):
@@ -43,13 +44,15 @@ class Car(object):
         print("D")
 
 
-    def checkDistanceToTrafficSignal(self, trafficSignalLocationOnRoad):
-        print("trafficSignalLocation: ", trafficSignalLocationOnRoad)
+    def setTrafficSignalLocation(self, distance):
+        print("Location of traffic signal: ", distance)
         global nextTrafficSignalLocationOnRoad
-        nextTrafficSignalLocationOnRoad = trafficSignalLocationOnRoad
+        nextTrafficSignalLocationOnRoad = distance
 
-        global distanceToNextSignal
-        distanceToNextSignal = trafficSignalLocationOnRoad - self.roadLengthCovered
+    def checkDistanceToTrafficSignal(self):
+        global distanceToNextSignal, nextTrafficSignalLocationOnRoad
+        distanceToNextSignal = nextTrafficSignalLocationOnRoad - self.roadLengthCovered
+        print("distance of signal: ", nextTrafficSignalLocationOnRoad)
         print("distance from signal: ", distanceToNextSignal)
 
 
@@ -64,7 +67,11 @@ class Car(object):
 
     def setVehicleSpeed(self, changedSpeed):
         self.vehicleSpeed = changedSpeed
-        global nextTrafficSignalLocationOnRoad
-        self.checkDistanceToTrafficSignal(nextTrafficSignalLocationOnRoad)
-        # TODO calculate road length covered
+        # calculate road length covered
+        self.roadLengthCovered += float(changedSpeed / 3.6)
+
+        print("Road length covered: ", self.roadLengthCovered)
+        # adjusting distance to traffic signal
+        self.checkDistanceToTrafficSignal()
+
         print("Speed of car: ", changedSpeed)

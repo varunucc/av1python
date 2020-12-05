@@ -10,7 +10,7 @@ class TrafficSignalEnum1(enum.Enum):
     Green = 3
     Yellow = 2
     Red = 1
-    locationOnRoad = 15
+    locationOnRoad = 120
 
 
 signalList = [TrafficSignalEnum1, TrafficSignalEnum1]

@@ -6,7 +6,7 @@ changedVehicleSpeed = 0
 
 class SpeedControl:
     def __init__(self):
-        print("SpeedControl")
+        # print("SpeedControl")
         self._observers = []
         self._changedVehicleSpeed = 0
 
@@ -26,30 +26,32 @@ class SpeedControl:
 
     def accelerate(self, accelerateRate, speedLimitedTo, vehicleSpeed):
         print("Accelerating..")
-        while vehicleSpeed <= speedLimitedTo:
-            time.sleep(accelerateRate)
-            vehicleSpeed += 1
+        while vehicleSpeed < speedLimitedTo:
+            time.sleep(1)
+            # convert to km/hr
+            vehicleSpeed += 1 * 3.6
             global changedVehicleSpeed
             self.changedVehicleSpeed = vehicleSpeed
-            print("Speed: ", self.changedVehicleSpeed)
+            # print("Speed: ", self.changedVehicleSpeed)
 
     def decelerate(self, decelerateRate, speedLimitedTo, vehicleSpeed):
         print("Decelerating..")
-        while vehicleSpeed >= speedLimitedTo:
+        while vehicleSpeed > speedLimitedTo:
             time.sleep(decelerateRate)
-            vehicleSpeed -= 1
+            # convert to km/hr
+            vehicleSpeed -= 1 * 3.6
             global changedVehicleSpeed
             self.changedVehicleSpeed = vehicleSpeed
-            print("Speed: ", self.changedVehicleSpeed)
+            # print("Speed: ", self.changedVehicleSpeed)
 
     @property
     def changedVehicleSpeed(self):
-        print("got speed changed")
+        # print("got speed changed")
         return self._changedVehicleSpeed
 
     @changedVehicleSpeed.setter
     def changedVehicleSpeed(self, new_value):
-        print("set changed speed")
+        # print("set changed speed")
         self._changedVehicleSpeed = new_value
         for callback in self._observers:
             callback(self._changedVehicleSpeed)
