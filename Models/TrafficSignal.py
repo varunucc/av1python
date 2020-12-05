@@ -2,7 +2,7 @@ import time
 import os
 
 trafficSignalList = []
-currentSignal = ''
+currentSignalLight = ''
 signalLocationOnRoad = 0
 
 
@@ -10,8 +10,9 @@ class TrafficSignal(object):
     def __init__(self, trafficSignals):
         self._observersTrafficLight = []
         self._observersTrafficSignalLocation = []
-        self._currentSignal = ''
+        self._currentSignalLight = ''
         self._signalLocationOnRoad = ''
+        self.currentSignalDistance = 0
         global trafficSignalList
         self.trafficSignalList = trafficSignals
 
@@ -22,24 +23,25 @@ class TrafficSignal(object):
             for signals in self.trafficSignalList:
                 global signalLocationOnRoad
                 self.signalLocationOnRoad = signals["locationOnRoad"].value
+                self.currentSignalDistance = signals["locationOnRoad"].value
                 print("Been here")
                 for signalLights in signals:
                     if signalLights.name == "locationOnRoad":
                         continue
                     print("Current traffic signal: ", signalLights.name, " Wait time: ", signalLights.value)
-                    global currentSignal
-                    self.currentSignal = signalLights
+                    global currentSignalLight
+                    self.currentSignalLight = signalLights
                     time.sleep(signalLights.value)
 
     @property
-    def currentSignal(self):
-        return self._currentSignal
+    def currentSignalLight(self):
+        return self._currentSignalLight
 
-    @currentSignal.setter
-    def currentSignal(self, new_value):
-        self._currentSignal = new_value
+    @currentSignalLight.setter
+    def currentSignalLight(self, new_value):
+        self._currentSignalLight = new_value
         for callback in self._observersTrafficLight:
-            callback(self._currentSignal)
+            callback(self._currentSignalLight)
 
     def signalChangeBroadcast(self, callback):
         self._observersTrafficLight.append(callback)

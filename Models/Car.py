@@ -19,6 +19,8 @@ class Car(object):
         self.trafficSignalData = ts
         self.trafficSignalData.signalChangeBroadcast(self.checkTrafficLightColour)
         self.trafficSignalData.signalLocationBroadcast(self.setTrafficSignalLocation)
+        global nextTrafficSignalLocationOnRoad
+        nextTrafficSignalLocationOnRoad = self.trafficSignalData.currentSignalDistance
 
         # Bind changes
         self.speedControl = sp
