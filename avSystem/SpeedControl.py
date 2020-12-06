@@ -30,8 +30,8 @@ class SpeedControl:
         self.decelerate(decelerationRate, speedLimitedTo, vehicleSpeed)
 
     def accelerate(self, accelerateRate, speedLimitedTo, vehicleSpeed):
-        print("Accelerating..")
-        print("Accelerating value: ", self.accelerating)
+        # print("Accelerating..")
+        # print("Accelerating value: ", self.accelerating)
         while self.accelerating:
             time.sleep(accelerateRate)
             # convert to km/hr

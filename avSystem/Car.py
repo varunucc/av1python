@@ -1,5 +1,6 @@
-from Models.TrafficSignal import TrafficSignal
+from avSystem.TrafficSignal import TrafficSignal
 import threading
+
 
 class Car(object):
 
@@ -25,11 +26,16 @@ class Car(object):
         self.speedControl = sp
         self.speedControl.notifySpeedChange(self.setVehicleSpeed)
 
+        self._slowDownProgramThread = threading.Thread(target=self.speedControl.slowDownVehicleSpeed(
+            self.vehicleSpeed, self.speedLimitedTo, self.distanceToNextSignal), daemon=True)
+        self._haltProgramThread = threading.Thread(target=self.speedControl.bringVehicleToHalt(
+            self.vehicleSpeed, self.speedLimitedTo, self.distanceToNextSignal), daemon=True)
+
         # Start accelerating
         self.speedControl.accelerating = True
-        self.accelerateThread = threading.Thread(target=self.speedControl.calculateAccelerationRateToLimitedSpeed(
+        self._accelerateThread = threading.Thread(target=self.speedControl.calculateAccelerationRateToLimitedSpeed(
             self.vehicleSpeed, self.speedLimitedTo), daemon=True)
-        self.accelerateThread.start()
+        self._accelerateThread.start()
         # self._accelerateThread.join()
 
     def checkTrafficLightColour(self, signalColour):
@@ -41,10 +47,8 @@ class Car(object):
             print("Car sees yellow signal")
         self.trafficSignalColour = signalColour.name
 
-
     def setRoadLengthCovered(self, speed):
         print("D")
-
 
     def setTrafficSignalLocation(self, distance):
         print("Location of traffic signal: ", distance)
@@ -52,35 +56,28 @@ class Car(object):
 
     def checkDistanceToTrafficSignal(self):
         self.distanceToNextSignal = self.nextTrafficSignalLocationOnRoad - self.roadLengthCovered
+
+        # next signal
+        if self.distanceToNextSignal <= 0:
+            self.trafficSignalData.nextSignal()
+
         print("distance of signal: ", self.nextTrafficSignalLocationOnRoad)
         print("distance from signal: ", self.distanceToNextSignal)
         self.actionAccordingToTrafficSignalColourAndDistance()
-
 
     def setSpeedLimitedTo(self, speed):
         print("Incrementing speed.")
 
     def actionAccordingToTrafficSignalColourAndDistance(self):
         print("Action according called")
-        if self.distanceToNextSignal <= 0:
-            self.trafficSignalData.nextSignal()
         if 20 < self.distanceToNextSignal <= 80:
-            print("Slowing down")
-            self.speedControl.accelerating = False
-            self.speedControl.slowDown = True
-            self.speedLimitedTo = 20
-            slowDownProgramThread = threading.Thread(target=self.speedControl.slowDownVehicleSpeed(
-                self.vehicleSpeed, self.speedLimitedTo, self.distanceToNextSignal), daemon=True)
-            slowDownProgramThread.start()
+            if (self._slowDownProgramThread is None) or (not self._slowDownProgramThread.is_alive()):
+                self.slowDown()
         if 0 < self.distanceToNextSignal <= 20:
-            print("Stopping")
-            self.speedControl.accelerating = False
-            self.speedControl.slowDown = False
-            self.speedControl.stop = True
-            self.speedLimitedTo = 0
-            haltProgramThread = threading.Thread(target=self.speedControl.bringVehicleToHalt(
-                self.vehicleSpeed, self.speedLimitedTo, self.distanceToNextSignal), daemon=True)
-            haltProgramThread.start()
+            if (self._haltProgramThread is None) or (not self._haltProgramThread.is_alive()):
+                self.stopVehicle()
+
+
 
     def failureToReduceSpeedBefore20mtsCheck(self):
         print("Return boolean")
@@ -95,3 +92,20 @@ class Car(object):
         self.checkDistanceToTrafficSignal()
 
         print("Speed of car: ", changedSpeed)
+
+    def slowDown(self):
+        print("Slowing down")
+        self.speedControl.accelerating = False
+        self.speedControl.slowDown = True
+        self.speedLimitedTo = 20
+        self._slowDownProgramThread.start()
+        print("Slow down thread started")
+
+    def stopVehicle(self):
+        print("Stopping")
+        self.speedControl.accelerating = False
+        self.speedControl.slowDown = False
+        self.speedControl.stop = True
+        self.speedLimitedTo = 0
+        self._haltProgramThread.start()
+        print("Halt thread started")

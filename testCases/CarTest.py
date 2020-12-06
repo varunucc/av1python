@@ -1,7 +1,7 @@
 import unittest
-from Models.Car import Car
-from Models.TrafficSignal import currentSignal
-from Models.Main import TrafficSignalEnum1
+from avSystem.Car import Car
+from avSystem.TrafficSignal import currentSignal
+from avSystem.Main import TrafficSignalEnum1
 
 
 class CarTest(unittest.TestCase):

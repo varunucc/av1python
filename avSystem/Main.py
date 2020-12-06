@@ -1,6 +1,6 @@
-from Models.TrafficSignal import TrafficSignal
-from Models.Car import Car
-from Models.SpeedControl import SpeedControl
+from avSystem.TrafficSignal import TrafficSignal
+from avSystem.Car import Car
+from avSystem.SpeedControl import SpeedControl
 import concurrent.futures
 import threading
 import enum
