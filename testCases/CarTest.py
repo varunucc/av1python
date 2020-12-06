@@ -11,9 +11,9 @@ class CarTest(unittest.TestCase):
         car.main()
         try:
             self.assertIsInstance(currentSignal, TrafficSignalEnum1)
-            print("Passed")
+            print("\nPassed")
         except:
-            print("Error")
+            print("\nError")
 
 
 

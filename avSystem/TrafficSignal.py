@@ -25,14 +25,14 @@ class TrafficSignal(object):
             currentSignal = self.trafficSignalList[self.signalCounter]
             global signalLocationOnRoad
             self.signalLocationOnRoad = currentSignal["locationOnRoad"].value
-            print("Been here")
-            for signalLights in currentSignal:
-                if signalLights.name == "locationOnRoad":
+            print("\nBeen here")
+            for signalData in currentSignal:
+                if signalData.name == "locationOnRoad":
                     continue
-                print("Current traffic signal: ", signalLights.name, " Wait time: ", signalLights.value)
+                print("\nCurrent traffic signal: ", signalData.name, " Wait time: ", signalData.value)
                 global currentSignalLight
-                self.currentSignalLight = signalLights
-                time.sleep(signalLights.value)
+                self.currentSignalLight = signalData
+                time.sleep(signalData.value)
 
     def nextSignal(self):
         if self.signalCounter < len(self.trafficSignalList):

@@ -17,7 +17,7 @@ class TrafficSignalEnum2(enum.Enum):
     Green = 1
     Yellow = 3
     Red = 2
-    locationOnRoad = 200
+    locationOnRoad = 220
 
 
 signalList = [TrafficSignalEnum1, TrafficSignalEnum2]
@@ -26,14 +26,14 @@ signalList = [TrafficSignalEnum1, TrafficSignalEnum2]
 class Main:
 
     def __init__(self):
-        print("Starting traffic signal...")
+        print("\nStarting traffic signal...")
         ts = TrafficSignal(signalList)
         sp = SpeedControl()
         trafficSignalThread = threading.Thread(target=ts.rotateSignals, daemon=True)
         trafficSignalThread.start()
         car = Car(ts, sp)
         trafficSignalThread.join()
-        print("Done.")
+        print("\nDone.")
 
 
 def main():
