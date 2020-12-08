@@ -21,8 +21,6 @@ class TrafficSignal(object):
         self.signalLocationOnRoad = self.trafficSignalList[0]["locationOnRoad"].value
 
     def rotateSignals(self):
-        if not len(self.trafficSignalList) > 0:
-            return
         while self.signalCounter < len(self.trafficSignalList):
             currentSignal = self.trafficSignalList[self.signalCounter]
             # print("\nBeen here")
