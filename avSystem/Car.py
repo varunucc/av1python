@@ -47,13 +47,15 @@ class Car(object):
         self._speedMonitorThread.join()
 
     def checkTrafficLightColour(self, signalColour):
-        # if signalColour.name == "Green":
-        #     print("\nCar sees green signal")
-        # elif signalColour.name == "Red":
-        #     print("\nCar sees red signal")
-        # elif signalColour.name == "Yellow":
-        #     print("\nCar sees yellow signal")
-        self.trafficSignalColour = signalColour.name
+        if signalColour.name == "Green":
+            print("\nCar sees green signal")
+            self.trafficSignalColour = signalColour.name
+        elif signalColour.name == "Red":
+            print("\nCar sees red signal")
+            self.trafficSignalColour = signalColour.name
+        elif signalColour.name == "Yellow":
+            print("\nCar sees yellow signal")
+            self.trafficSignalColour = signalColour.name
 
     def setRoadLengthCovered(self, speed):
         print("\nD")
