@@ -19,7 +19,7 @@ class SpeedControl:
 
     def calculateDecelerationRateWithinDistance(self, vehicleSpeed, speedLimitedTo, distanceWithin):
         # TODO calculate deceleration rate
-        decelerationRate = 1
+        decelerationRate = 1.4
         # print("Vehicle speed: ", vehicleSpeed)
         # print("Distance within: ", distanceWithin)
         # print("Calculated deceleration rate: ", decelerationRate)

@@ -8,7 +8,7 @@ class Car(object):
         self.vehicleSpeed = 0
         self.topSpeed = 60
         self.haltSpeed = 0
-        self.slowDownSpeed = 20
+        self.slowDownSpeed = 30
 
         self.speedLimitedTo = self.haltSpeed
         self.trafficSignalColour = ''
@@ -91,13 +91,13 @@ class Car(object):
 
     def actionAccordingToTrafficSignalColourAndDistance(self):
         if 20 < self.distanceToNextSignal <= 80:
-            if self.vehicleSpeed > 20:
+            if self.vehicleSpeed > self.slowDownSpeed:
                 self.slowDown()
             else:
                 print("\nMaintaining speed")
         if 0 < self.distanceToNextSignal <= 20:
             if self.trafficSignalColour == "Red":
-                if self.vehicleSpeed > 0:
+                if self.vehicleSpeed > self.haltSpeed:
                     self.stopCar()
                 else:
                     print("\nVehicle stopped")
