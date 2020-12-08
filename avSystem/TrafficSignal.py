@@ -36,8 +36,8 @@ class TrafficSignal(object):
 
     def nextSignal(self):
         print("\nNext signal called")
+        self.signalCounter += 1
         if self.signalCounter < len(self.trafficSignalList):
-            self.signalCounter += 1
             # assign distance to signal
             global signalLocationOnRoad
             self.signalLocationOnRoad = self.trafficSignalList[self.signalCounter]["locationOnRoad"].value

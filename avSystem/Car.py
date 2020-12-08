@@ -1,7 +1,6 @@
 import threading
 import time
 
-
 class Car(object):
 
     def __init__(self, ts, sp):
@@ -60,7 +59,7 @@ class Car(object):
         print("\nD")
 
     def setTrafficSignalLocation(self, distance):
-        print("\nLocation of traffic signal on the road: {}mts.".format(distance))
+        print("\nLocation of traffic signal on the road: {}mts".format(distance))
         self.nextTrafficSignalLocationOnRoad = distance
 
     def speedMonitor(self):
@@ -98,7 +97,11 @@ class Car(object):
                 self.stopCar()
             else:
                 print("\nVehicle stopped")
+                # stop monitoring speed
                 self._monitorSpeed = False
+                # stop traffic signal
+                self.trafficSignalData.nextSignal()
+
         # else:
         #     self._accelerateThread = threading.Thread(
         #         target=self.speedControl.calculateAccelerationRateToLimitedSpeed,

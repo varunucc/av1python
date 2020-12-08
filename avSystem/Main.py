@@ -13,14 +13,8 @@ class TrafficSignalEnum1(enum.Enum):
     locationOnRoad = 200
 
 
-class TrafficSignalEnum2(enum.Enum):
-    Green = 15
-    Yellow = 4
-    Red = 20
-    locationOnRoad = 320
-
 # Form signal list
-signalList = [TrafficSignalEnum1, TrafficSignalEnum2]
+signalList = [TrafficSignalEnum1]
 
 
 class Main:
