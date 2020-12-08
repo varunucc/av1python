@@ -6,9 +6,11 @@ class Car(object):
     def __init__(self, ts, sp):
 
         self.vehicleSpeed = 0
-        self.topSpeed = 60.0
-        self.haltSpeed = 0.0
-        self.speedLimitedTo = self.topSpeed
+        self.topSpeed = 60
+        self.haltSpeed = 0
+        self.slowDownSpeed = 20
+
+        self.speedLimitedTo = self.haltSpeed
         self.trafficSignalColour = ''
         self.distanceToNextSignal = 0
         self.nextTrafficSignalLocationOnRoad = 0
@@ -16,7 +18,6 @@ class Car(object):
         self._monitorSpeed = False
 
         self.roadLengthCovered = 0
-        self.distanceFromSignalToStartBreaking = 9999999
         self.failureModeEnabled = False
 
         self.trafficSignalData = ts
@@ -110,6 +111,7 @@ class Car(object):
                     args=(self.vehicleSpeed, self.speedLimitedTo,), daemon=True)
                 self._accelerateThread.start()
         if self.distanceToNextSignal > 80:
+            self.speedLimitedTo = self.topSpeed
             self._accelerateThread = threading.Thread(target=self.speedControl.calculateAccelerationRateToLimitedSpeed,
                                                       args=(self.vehicleSpeed, self.speedLimitedTo,), daemon=True)
             self._accelerateThread.start()
@@ -125,7 +127,7 @@ class Car(object):
         print("\nSlowing down")
         self.speedControl.accelerating = False
         self.speedControl.decelerating = True
-        self.speedLimitedTo = 20
+        self.speedLimitedTo = self.slowDownSpeed
         self._slowDownProgramThread = threading.Thread(target=self.speedControl.slowDownVehicleSpeed,
                                                        args=(self.vehicleSpeed, self.speedLimitedTo,
                                                              self.distanceToNextSignal - 20,), daemon=True)
@@ -136,7 +138,7 @@ class Car(object):
         self.speedControl.decelerating = False
         self.speedControl.accelerating = False
         self.speedControl.decelerating = True
-        self.speedLimitedTo = 0
+        self.speedLimitedTo = self.haltSpeed
         self._haltProgramThread = threading.Thread(target=self.speedControl.bringVehicleToHalt,
                                                    args=(self.vehicleSpeed, self.speedLimitedTo,
                                                          self.distanceToNextSignal,), daemon=True)

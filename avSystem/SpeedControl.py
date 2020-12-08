@@ -7,8 +7,6 @@ class SpeedControl:
         self._changedVehicleSpeed = 0
         self.accelerating = False
         self.accelerationRate = 1
-        self.decelerationRate = 1
-        self.brakeForce = 2.5
 
     def slowDownVehicleSpeed(self, vehicleSpeed, speedLimitedTo, distanceToSlowDownWithin):
         self.calculateDecelerationRateWithinDistance(vehicleSpeed, speedLimitedTo, distanceToSlowDownWithin)
@@ -42,7 +40,7 @@ class SpeedControl:
         # print("\nDecelerating..")
         # convert to km/hr
         if vehicleSpeed > speedLimitedTo:
-            vehicleSpeed -= 3.6 * self.decelerationRate
+            vehicleSpeed -= 3.6 * decelerateRate
             if vehicleSpeed < speedLimitedTo:
                 vehicleSpeed = speedLimitedTo
             global changedVehicleSpeed

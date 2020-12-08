@@ -9,7 +9,7 @@ import enum
 class TrafficSignalEnum1(enum.Enum):
     Green = 1
     Yellow = 3
-    Red = 30
+    Red = 25
     locationOnRoad = 100
 
 
