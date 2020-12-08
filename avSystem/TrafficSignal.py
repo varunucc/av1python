@@ -35,7 +35,7 @@ class TrafficSignal(object):
                 time.sleep(signalData.value)
 
     def nextSignal(self):
-        print("\nNext signal called")
+        # print("\nNext signal called")
         self.signalCounter += 1
         if self.signalCounter < len(self.trafficSignalList):
             # assign distance to signal

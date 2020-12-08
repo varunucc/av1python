@@ -1,5 +1,3 @@
-import time
-
 changedVehicleSpeed = 0
 
 
@@ -32,21 +30,23 @@ class SpeedControl:
     def accelerate(self, accelerateRate, speedLimitedTo, vehicleSpeed):
         # print("\nAccelerating..")
         # convert to km/hr
-        vehicleSpeed += 3.6
-        if vehicleSpeed > speedLimitedTo:
-            vehicleSpeed = speedLimitedTo
-        global changedVehicleSpeed
-        self.changedVehicleSpeed = round(vehicleSpeed)
+        if vehicleSpeed < speedLimitedTo:
+            vehicleSpeed += 3.6
+            if vehicleSpeed > speedLimitedTo:
+                vehicleSpeed = speedLimitedTo
+            global changedVehicleSpeed
+            self.changedVehicleSpeed = round(vehicleSpeed)
         # print("\nSpeed from accelerating: ", self.changedVehicleSpeed)
 
     def decelerate(self, decelerateRate, speedLimitedTo, vehicleSpeed):
         # print("\nDecelerating..")
         # convert to km/hr
-        vehicleSpeed -= (3.6 * self.brakeForce)
-        if vehicleSpeed < speedLimitedTo:
-            vehicleSpeed = speedLimitedTo
-        global changedVehicleSpeed
-        self.changedVehicleSpeed = round(vehicleSpeed)
+        if vehicleSpeed > speedLimitedTo:
+            vehicleSpeed -= 3.6 * self.decelerationRate
+            if vehicleSpeed < speedLimitedTo:
+                vehicleSpeed = speedLimitedTo
+            global changedVehicleSpeed
+            self.changedVehicleSpeed = round(vehicleSpeed)
         # print("\nSpeed from decelerating: ", self.changedVehicleSpeed)
 
     @property

@@ -78,6 +78,7 @@ class Car(object):
 
         # next signal
         if self.distanceToNextSignal <= 0:
+            self.distanceToNextSignal = 0
             self.trafficSignalData.nextSignal()
 
         print("\nDistance from signal: {}mts.".format(self.distanceToNextSignal))
@@ -92,21 +93,20 @@ class Car(object):
             else:
                 print("\nMaintaining speed")
         if 0 < self.distanceToNextSignal <= 20:
-            # if self.trafficSignalColour == "Red":
-            if self.vehicleSpeed > 0:
-                self.stopCar()
+            if self.trafficSignalColour == "Red":
+                if self.vehicleSpeed > 0:
+                    self.stopCar()
+                else:
+                    print("\nVehicle stopped")
+                    # stop monitoring speed
+                    self._monitorSpeed = False
+                    # stop traffic signal
+                    self.trafficSignalData.nextSignal()
             else:
-                print("\nVehicle stopped")
-                # stop monitoring speed
-                self._monitorSpeed = False
-                # stop traffic signal
-                self.trafficSignalData.nextSignal()
-
-        # else:
-        #     self._accelerateThread = threading.Thread(
-        #         target=self.speedControl.calculateAccelerationRateToLimitedSpeed,
-        #         args=(self.vehicleSpeed, self.speedLimitedTo,), daemon=True)
-        #     self._accelerateThread.start()
+                self._accelerateThread = threading.Thread(
+                    target=self.speedControl.calculateAccelerationRateToLimitedSpeed,
+                    args=(self.vehicleSpeed, self.speedLimitedTo,), daemon=True)
+                self._accelerateThread.start()
         if self.distanceToNextSignal > 80:
             self._accelerateThread = threading.Thread(target=self.speedControl.calculateAccelerationRateToLimitedSpeed,
                                                       args=(self.vehicleSpeed, self.speedLimitedTo,), daemon=True)

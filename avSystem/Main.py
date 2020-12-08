@@ -7,10 +7,10 @@ import enum
 
 
 class TrafficSignalEnum1(enum.Enum):
-    Green = 20
-    Yellow = 4
+    Green = 1
+    Yellow = 3
     Red = 30
-    locationOnRoad = 200
+    locationOnRoad = 100
 
 
 # Form signal list
