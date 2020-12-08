@@ -25,11 +25,11 @@ class TrafficSignal(object):
             return
         while self.signalCounter < len(self.trafficSignalList):
             currentSignal = self.trafficSignalList[self.signalCounter]
-            print("\nBeen here")
+            # print("\nBeen here")
             for signalData in currentSignal:
                 if signalData.name == "locationOnRoad":
                     continue
-                print("\nCurrent traffic signal: ", signalData.name, " Wait time: ", signalData.value)
+                print("\nCurrent traffic signal: {} Wait time: {}".format(signalData.name, signalData.value))
                 global currentSignalLight
                 self.currentSignalLight = signalData
                 time.sleep(signalData.value)
