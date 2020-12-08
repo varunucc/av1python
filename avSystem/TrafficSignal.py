@@ -16,15 +16,15 @@ class TrafficSignal(object):
         self.trafficSignalList = trafficSignals
         self.signalCounter = 0
 
+        # assign distance of first signal
+        global signalLocationOnRoad
+        self.signalLocationOnRoad = self.trafficSignalList[0]["locationOnRoad"].value
+
     def rotateSignals(self):
         if not len(self.trafficSignalList) > 0:
             return
-        while True:
-            if self.signalCounter >= len(self.trafficSignalList):
-                break
+        while self.signalCounter < len(self.trafficSignalList):
             currentSignal = self.trafficSignalList[self.signalCounter]
-            global signalLocationOnRoad
-            self.signalLocationOnRoad = currentSignal["locationOnRoad"].value
             print("\nBeen here")
             for signalData in currentSignal:
                 if signalData.name == "locationOnRoad":
@@ -35,8 +35,12 @@ class TrafficSignal(object):
                 time.sleep(signalData.value)
 
     def nextSignal(self):
+        print("\nNext signal called")
         if self.signalCounter < len(self.trafficSignalList):
             self.signalCounter += 1
+            # assign distance to signal
+            global signalLocationOnRoad
+            self.signalLocationOnRoad = self.trafficSignalList[self.signalCounter]["locationOnRoad"].value
 
     @property
     def currentSignalLight(self):

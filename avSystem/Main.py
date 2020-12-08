@@ -7,17 +7,17 @@ import enum
 
 
 class TrafficSignalEnum1(enum.Enum):
-    Green = 3
-    Yellow = 2
-    Red = 1
-    locationOnRoad = 120
+    Green = 20
+    Yellow = 4
+    Red = 30
+    locationOnRoad = 200
 
 
 class TrafficSignalEnum2(enum.Enum):
-    Green = 1
-    Yellow = 3
-    Red = 2
-    locationOnRoad = 220
+    Green = 15
+    Yellow = 4
+    Red = 20
+    locationOnRoad = 320
 
 
 signalList = [TrafficSignalEnum1, TrafficSignalEnum2]
