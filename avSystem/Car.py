@@ -1,6 +1,5 @@
 import threading
 import time
-import math
 
 
 class Car(object):
@@ -72,12 +71,12 @@ class Car(object):
         # next signal
         # print("Distance to signal: {}, vehicle speed: {}".format(self.distanceToNextSignal, self.vehicleSpeed))
         if self.distanceToNextSignal <= 0.1 and round(self.vehicleSpeed) <= 1:
-            print("in If")
             self.distanceToNextSignal = 0
             self.vehicleSpeed = 0
             self.trafficSignalData.nextSignal()
 
-        print("\nDistance from signal: {}mts.".format(round(self.distanceToNextSignal, 2)))
+        print("\nDistance from signal: {}mts".format(round(self.distanceToNextSignal, 2)))
+        print("\nCurrent vehicle speed: {}km/hr".format(round(self.vehicleSpeed, 2)))
 
     def actionAccordingToTrafficSignalColourAndDistance(self):
         # req Code the actions that the vehicle should perform according to the traffic light color + distance from
@@ -88,7 +87,6 @@ class Car(object):
             if self.vehicleSpeed > self.slowDownSpeed:
                 self.slowDown()
             else:
-                self.speedControl.decelerateRateCalculated = False
                 print("\nMaintaining speed")
         elif 0 <= self.distanceToNextSignal <= 20:
             if self.trafficSignalColour == "Red":
@@ -97,7 +95,6 @@ class Car(object):
                     # print("Halt speed now at : ", (self.vehicleSpeed / 3.6))
                     self.stopCar()
                 else:
-                    self.speedControl.decelerateRateCalculated = False
                     print("\nVehicle stopped")
                     # stop monitoring speed
                     self._monitorSpeed = False
@@ -108,9 +105,10 @@ class Car(object):
         elif self.distanceToNextSignal > 80:
             self.speedLimitedTo = self.topSpeed
             self.speedControl.calculateAccelerationRateToLimitedSpeed(self.vehicleSpeed, self.speedLimitedTo)
+        else:
+            raise ValueError("Minimum distance from signal should be > 80mts.")
 
     def setVehicleSpeed(self, speed):
-        print("\nCurrent vehicle speed: {}km/hr".format(round(speed, 2)))
         self.vehicleSpeed = speed
 
     def slowDown(self):

@@ -9,7 +9,7 @@ class TrafficSignalEnum1(enum.Enum):
     Green = 1
     Yellow = 3
     Red = 25
-    locationOnRoad = 200
+    locationOnRoad = 100
 
 
 # Form signal list

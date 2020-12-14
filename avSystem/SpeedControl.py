@@ -1,6 +1,6 @@
 changedVehicleSpeed = 0
 
-decelerationRate = 2.6
+rateOfDeceleration = 2.6
 
 
 class SpeedControl:
@@ -8,26 +8,22 @@ class SpeedControl:
         self._speedObserver = []
         self._changedVehicleSpeed = 0
         self.accelerating = False
-        self.accelerationRate = 1
-        self.decelerateRateCalculated = False
+        self.rateOfAcceleration = 1
 
     def calculateAccelerationRateToLimitedSpeed(self, vehicleSpeed, speedLimitedTo):
-        self.accelerate(self.accelerationRate, speedLimitedTo, vehicleSpeed)
+        self.accelerate(self.rateOfAcceleration, speedLimitedTo, vehicleSpeed)
 
     def calculateDecelerationRateWithinDistance(self, vehicleSpeed, speedLimitedTo, distanceWithin):
-        global decelerationRate
-        # if not self.decelerateRateCalculated:
+        global rateOfDeceleration
         # formula: v v = u u + 2 a s
-        decelerationRate = ((((speedLimitedTo/3.6)**2)-((vehicleSpeed/3.6)**2))/(2*distanceWithin))
-        self.decelerateRateCalculated = True
-        # print("Vehicle speed: ", vehicleSpeed)
-        # print("Distance within: ", distanceWithin)
-        # print("Calculated deceleration rate: ", decelerationRate)
-        self.decelerate(decelerationRate, speedLimitedTo, vehicleSpeed)
+        speedLimitedToInMetersPerSecond = speedLimitedTo/3.6
+        vehicleSpeedInMeterPerSecond = vehicleSpeed/3.6
+        rateOfDeceleration = (((speedLimitedToInMetersPerSecond**2)-(vehicleSpeedInMeterPerSecond**2))/(2*distanceWithin))
+        self.decelerate(rateOfDeceleration, speedLimitedTo, vehicleSpeed)
 
     def accelerate(self, accelerateRate, speedLimitedTo, vehicleSpeed):
         # print("\nAccelerating..")
-        # convert to km/hr
+        # add in km/hr
         if vehicleSpeed < speedLimitedTo:
             vehicleSpeed += 3.6 * accelerateRate
             if vehicleSpeed > speedLimitedTo:
@@ -38,7 +34,7 @@ class SpeedControl:
 
     def decelerate(self, decelerateRate, speedLimitedTo, vehicleSpeed):
         # print("\nDecelerating..")
-        # convert to km/hr
+        # subtract in km/hr
         if vehicleSpeed > speedLimitedTo:
             vehicleSpeed += 3.6 * decelerateRate
             if vehicleSpeed <= speedLimitedTo:
