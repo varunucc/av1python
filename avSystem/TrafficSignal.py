@@ -21,6 +21,7 @@ class TrafficSignal(object):
         self.signalLocationOnRoad = self.trafficSignalList[0]["locationOnRoad"].value
 
     def rotateSignals(self):
+        # req Implement the traffic light color change.
         while self.signalCounter < len(self.trafficSignalList):
             currentSignal = self.trafficSignalList[self.signalCounter]
             # print("\nBeen here")
@@ -65,4 +66,3 @@ class TrafficSignal(object):
 
     def signalLocationBroadcast(self, callback):
         self._observersTrafficSignalLocation.append(callback)
-

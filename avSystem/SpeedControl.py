@@ -1,5 +1,7 @@
 changedVehicleSpeed = 0
 
+decelerationRate = 2.6
+
 
 class SpeedControl:
     def __init__(self):
@@ -7,19 +9,17 @@ class SpeedControl:
         self._changedVehicleSpeed = 0
         self.accelerating = False
         self.accelerationRate = 1
-
-    def slowDownVehicleSpeed(self, vehicleSpeed, speedLimitedTo, distanceToSlowDownWithin):
-        self.calculateDecelerationRateWithinDistance(vehicleSpeed, speedLimitedTo, distanceToSlowDownWithin)
-
-    def bringVehicleToHalt(self, vehicleSpeed, speedLimitedTo, distanceToHaltWithin):
-        self.calculateDecelerationRateWithinDistance(vehicleSpeed, speedLimitedTo, distanceToHaltWithin)
+        self.decelerateRateCalculated = False
 
     def calculateAccelerationRateToLimitedSpeed(self, vehicleSpeed, speedLimitedTo):
         self.accelerate(self.accelerationRate, speedLimitedTo, vehicleSpeed)
 
     def calculateDecelerationRateWithinDistance(self, vehicleSpeed, speedLimitedTo, distanceWithin):
-        # TODO calculate deceleration rate
-        decelerationRate = 1.4
+        global decelerationRate
+        # if not self.decelerateRateCalculated:
+        # formula: v v = u u + 2 a s
+        decelerationRate = ((((speedLimitedTo/3.6)**2)-((vehicleSpeed/3.6)**2))/(2*distanceWithin))
+        self.decelerateRateCalculated = True
         # print("Vehicle speed: ", vehicleSpeed)
         # print("Distance within: ", distanceWithin)
         # print("Calculated deceleration rate: ", decelerationRate)
@@ -29,22 +29,22 @@ class SpeedControl:
         # print("\nAccelerating..")
         # convert to km/hr
         if vehicleSpeed < speedLimitedTo:
-            vehicleSpeed += 3.6
+            vehicleSpeed += 3.6 * accelerateRate
             if vehicleSpeed > speedLimitedTo:
                 vehicleSpeed = speedLimitedTo
-            global changedVehicleSpeed
-            self.changedVehicleSpeed = round(vehicleSpeed)
+        global changedVehicleSpeed
+        self.changedVehicleSpeed = vehicleSpeed
         # print("\nSpeed from accelerating: ", self.changedVehicleSpeed)
 
     def decelerate(self, decelerateRate, speedLimitedTo, vehicleSpeed):
         # print("\nDecelerating..")
         # convert to km/hr
         if vehicleSpeed > speedLimitedTo:
-            vehicleSpeed -= 3.6 * decelerateRate
-            if vehicleSpeed < speedLimitedTo:
+            vehicleSpeed += 3.6 * decelerateRate
+            if vehicleSpeed <= speedLimitedTo:
                 vehicleSpeed = speedLimitedTo
             global changedVehicleSpeed
-            self.changedVehicleSpeed = round(vehicleSpeed)
+            self.changedVehicleSpeed = vehicleSpeed
         # print("\nSpeed from decelerating: ", self.changedVehicleSpeed)
 
     @property

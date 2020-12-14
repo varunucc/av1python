@@ -1,9 +1,11 @@
 from unittest import TestCase
+from avSystem.Main import TrafficSignalEnum1
 
 
 class TestCar(TestCase):
-    def test_check_traffic_light_colour(self):
-        self.fail()
+
+    def test_check_traffic_light_colour(self, signalColour):
+        self.assertIsInstance(signalColour, TrafficSignalEnum1)
 
     def test_set_road_length_covered(self):
         self.fail()

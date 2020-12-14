@@ -1,5 +1,7 @@
 import threading
 import time
+import math
+
 
 class Car(object):
 
@@ -14,7 +16,6 @@ class Car(object):
         self.trafficSignalColour = ''
         self.distanceToNextSignal = 0
         self.nextTrafficSignalLocationOnRoad = 0
-        self.decelerationLock = False
         self._monitorSpeed = False
 
         self.roadLengthCovered = 0
@@ -29,25 +30,17 @@ class Car(object):
         self.speedControl = sp
         self.speedControl.notifySpeedChange(self.setVehicleSpeed)
 
-        # declare threads
-        self._speedMonitorThread = threading.Thread(target=self.speedMonitor, daemon=True)
-        self._slowDownProgramThread = threading.Thread(target=self.speedControl.slowDownVehicleSpeed,
-                                                       args=(self.vehicleSpeed, self.speedLimitedTo,
-                                                             self.distanceToNextSignal,), daemon=True)
-        self._haltProgramThread = threading.Thread(target=self.speedControl.bringVehicleToHalt,
-                                                   args=(self.vehicleSpeed, self.speedLimitedTo,
-                                                         self.distanceToNextSignal,), daemon=True)
-        self._accelerateThread = threading.Thread(target=self.speedControl.calculateAccelerationRateToLimitedSpeed,
-                                                  args=(self.vehicleSpeed, self.speedLimitedTo,), daemon=True)
+        # declare thread
+        self._speedMonitorThread = threading.Thread(target=self.speedAndDistanceToSignalMonitor, daemon=True)
+
         # Monitor speed and start accelerating
         self._monitorSpeed = True
         self.speedControl.accelerating = True
         self._speedMonitorThread.start()
-        self._accelerateThread.start()
-        self._accelerateThread.join()
         self._speedMonitorThread.join()
 
     def checkTrafficLightColour(self, signalColour):
+        # req Make the car monitor the traffic light color change.
         if signalColour.name == "Green":
             print("\nCar sees green signal")
             self.trafficSignalColour = signalColour.name
@@ -58,69 +51,66 @@ class Car(object):
             print("\nCar sees yellow signal")
             self.trafficSignalColour = signalColour.name
 
-    def setRoadLengthCovered(self, speed):
-        print("\nD")
-
     def setTrafficSignalLocation(self, distance):
         print("\nLocation of traffic signal on the road: {}mts".format(distance))
         self.nextTrafficSignalLocationOnRoad = distance
 
-    def speedMonitor(self):
+    def speedAndDistanceToSignalMonitor(self):
         while self._monitorSpeed:
-            time.sleep(1.0)
             self.checkDistanceToTrafficSignal()
             self.actionAccordingToTrafficSignalColourAndDistance()
+            time.sleep(1.0)
 
     def checkDistanceToTrafficSignal(self):
         # calculate road length covered
-        self.roadLengthCovered += round(self.vehicleSpeed / 3.6)
+        self.roadLengthCovered += (self.vehicleSpeed / 3.6)
         # print("\nRoad length covered: ", self.roadLengthCovered)
 
         # calculate distance to signal
         self.distanceToNextSignal = self.nextTrafficSignalLocationOnRoad - self.roadLengthCovered
 
         # next signal
-        if self.distanceToNextSignal <= 0:
+        # print("Distance to signal: {}, vehicle speed: {}".format(self.distanceToNextSignal, self.vehicleSpeed))
+        if self.distanceToNextSignal <= 0.1 and round(self.vehicleSpeed) <= 1:
+            print("in If")
             self.distanceToNextSignal = 0
+            self.vehicleSpeed = 0
             self.trafficSignalData.nextSignal()
 
-        print("\nDistance from signal: {}mts.".format(self.distanceToNextSignal))
-
-    def setSpeedLimitedTo(self, speed):
-        print("\nIncrementing speed.")
+        print("\nDistance from signal: {}mts.".format(round(self.distanceToNextSignal, 2)))
 
     def actionAccordingToTrafficSignalColourAndDistance(self):
+        # req Code the actions that the vehicle should perform according to the traffic light color + distance from
+        # traffic light (Behavior System).
+        # req Ensure that the vehicle slows down before the traffic light and stops
+        # before the red traffic signal.
         if 20 < self.distanceToNextSignal <= 80:
             if self.vehicleSpeed > self.slowDownSpeed:
                 self.slowDown()
             else:
+                self.speedControl.decelerateRateCalculated = False
                 print("\nMaintaining speed")
-        if 0 < self.distanceToNextSignal <= 20:
+        elif 0 <= self.distanceToNextSignal <= 20:
             if self.trafficSignalColour == "Red":
+                # print("Vehicle speed at stop car: ", self.vehicleSpeed)
                 if self.vehicleSpeed > self.haltSpeed:
+                    # print("Halt speed now at : ", (self.vehicleSpeed / 3.6))
                     self.stopCar()
                 else:
+                    self.speedControl.decelerateRateCalculated = False
                     print("\nVehicle stopped")
                     # stop monitoring speed
                     self._monitorSpeed = False
                     # stop traffic signal
                     self.trafficSignalData.nextSignal()
             else:
-                self._accelerateThread = threading.Thread(
-                    target=self.speedControl.calculateAccelerationRateToLimitedSpeed,
-                    args=(self.vehicleSpeed, self.speedLimitedTo,), daemon=True)
-                self._accelerateThread.start()
-        if self.distanceToNextSignal > 80:
+                self.speedControl.calculateAccelerationRateToLimitedSpeed(self.vehicleSpeed, self.speedLimitedTo)
+        elif self.distanceToNextSignal > 80:
             self.speedLimitedTo = self.topSpeed
-            self._accelerateThread = threading.Thread(target=self.speedControl.calculateAccelerationRateToLimitedSpeed,
-                                                      args=(self.vehicleSpeed, self.speedLimitedTo,), daemon=True)
-            self._accelerateThread.start()
-
-    def failureToReduceSpeedBefore20mtsCheck(self):
-        print("\nReturn boolean")
+            self.speedControl.calculateAccelerationRateToLimitedSpeed(self.vehicleSpeed, self.speedLimitedTo)
 
     def setVehicleSpeed(self, speed):
-        print("\nCurrent vehicle speed: {}km/hr".format(speed))
+        print("\nCurrent vehicle speed: {}km/hr".format(round(speed, 2)))
         self.vehicleSpeed = speed
 
     def slowDown(self):
@@ -128,10 +118,8 @@ class Car(object):
         self.speedControl.accelerating = False
         self.speedControl.decelerating = True
         self.speedLimitedTo = self.slowDownSpeed
-        self._slowDownProgramThread = threading.Thread(target=self.speedControl.slowDownVehicleSpeed,
-                                                       args=(self.vehicleSpeed, self.speedLimitedTo,
-                                                             self.distanceToNextSignal - 20,), daemon=True)
-        self._slowDownProgramThread.start()
+        self.speedControl.calculateDecelerationRateWithinDistance(self.vehicleSpeed, self.speedLimitedTo,
+                                                                  self.distanceToNextSignal - 20)
 
     def stopCar(self):
         print("\nStopping")
@@ -139,7 +127,5 @@ class Car(object):
         self.speedControl.accelerating = False
         self.speedControl.decelerating = True
         self.speedLimitedTo = self.haltSpeed
-        self._haltProgramThread = threading.Thread(target=self.speedControl.bringVehicleToHalt,
-                                                   args=(self.vehicleSpeed, self.speedLimitedTo,
-                                                         self.distanceToNextSignal,), daemon=True)
-        self._haltProgramThread.start()
+        self.speedControl.calculateDecelerationRateWithinDistance(self.vehicleSpeed, self.speedLimitedTo,
+                                                                  self.distanceToNextSignal)
