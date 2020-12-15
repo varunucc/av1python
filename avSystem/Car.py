@@ -1,19 +1,24 @@
 import threading
 import time
+import tkinter as tk
 
+vehicleSpeed = 0
+distanceToNextSignal = 0
 
 class Car(object):
 
     def __init__(self, ts, sp):
 
-        self.vehicleSpeed = 0
+        self._vehicleSpeed = 0
         self.topSpeed = 60
         self.haltSpeed = 0
         self.slowDownSpeed = 30
+        self._speedObserver = []
+        self._distanceObserver = []
 
         self.speedLimitedTo = self.haltSpeed
         self.trafficSignalColour = ''
-        self.distanceToNextSignal = 0
+        self._distanceToNextSignal = 0
         self.nextTrafficSignalLocationOnRoad = 0
         self._monitorSpeed = False
 
@@ -36,7 +41,7 @@ class Car(object):
         self._monitorSpeed = True
         self.speedControl.accelerating = True
         self._speedMonitorThread.start()
-        self._speedMonitorThread.join()
+        # self._speedMonitorThread.join()
 
     def checkTrafficLightColour(self, signalColour):
         # req Make the car monitor the traffic light color change.
@@ -61,6 +66,7 @@ class Car(object):
             time.sleep(1.0)
 
     def checkDistanceToTrafficSignal(self):
+        global vehicleSpeed, distanceToNextSignal
         # calculate road length covered
         self.roadLengthCovered += (self.vehicleSpeed / 3.6)
         # print("\nRoad length covered: ", self.roadLengthCovered)
@@ -70,6 +76,7 @@ class Car(object):
 
         # next signal
         # print("Distance to signal: {}, vehicle speed: {}".format(self.distanceToNextSignal, self.vehicleSpeed))
+        # req stop vehicle at signal
         if self.distanceToNextSignal <= 0.1 and round(self.vehicleSpeed) <= 1:
             self.distanceToNextSignal = 0
             self.vehicleSpeed = 0
@@ -79,11 +86,13 @@ class Car(object):
         print("\nCurrent vehicle speed: {}km/hr".format(round(self.vehicleSpeed, 2)))
 
     def actionAccordingToTrafficSignalColourAndDistance(self):
+        global vehicleSpeed
+        global distanceToNextSignal
         # req Code the actions that the vehicle should perform according to the traffic light color + distance from
         # traffic light (Behavior System).
         # req Ensure that the vehicle slows down before the traffic light and stops
         # before the red traffic signal.
-        if 20 < self.distanceToNextSignal <= 80:
+        if 20 < self.distanceToNextSignal <= 80 and self.vehicleSpeed > 0:
             if self.vehicleSpeed > self.slowDownSpeed:
                 self.slowDown()
             else:
@@ -92,7 +101,7 @@ class Car(object):
             if self.trafficSignalColour == "Red":
                 # print("Vehicle speed at stop car: ", self.vehicleSpeed)
                 if self.vehicleSpeed > self.haltSpeed:
-                    # print("Halt speed now at : ", (self.vehicleSpeed / 3.6))
+                    # print("Halt speed now at : ", (self._vehicleSpeed / 3.6))
                     self.stopCar()
                 else:
                     print("\nVehicle stopped")
@@ -101,17 +110,22 @@ class Car(object):
                     # stop traffic signal
                     self.trafficSignalData.nextSignal()
             else:
+                self.speedLimitedTo = self.topSpeed
                 self.speedControl.calculateAccelerationRateToLimitedSpeed(self.vehicleSpeed, self.speedLimitedTo)
         elif self.distanceToNextSignal > 80:
             self.speedLimitedTo = self.topSpeed
             self.speedControl.calculateAccelerationRateToLimitedSpeed(self.vehicleSpeed, self.speedLimitedTo)
-        else:
-            raise ValueError("Minimum distance from signal should be > 80mts.")
+        # elif self.distanceToNextSignal < 100 and self.vehicleSpeed == 0:
+        #     raise ValueError("Minimum distance from signal should be >= 100mts.")
 
     def setVehicleSpeed(self, speed):
+        global vehicleSpeed
+        global distanceToNextSignal
         self.vehicleSpeed = speed
 
     def slowDown(self):
+        global vehicleSpeed
+        global distanceToNextSignal
         print("\nSlowing down")
         self.speedControl.accelerating = False
         self.speedControl.decelerating = True
@@ -120,6 +134,8 @@ class Car(object):
                                                                   self.distanceToNextSignal - 20)
 
     def stopCar(self):
+        global vehicleSpeed
+        global distanceToNextSignal
         print("\nStopping")
         self.speedControl.decelerating = False
         self.speedControl.accelerating = False
@@ -127,3 +143,29 @@ class Car(object):
         self.speedLimitedTo = self.haltSpeed
         self.speedControl.calculateDecelerationRateWithinDistance(self.vehicleSpeed, self.speedLimitedTo,
                                                                   self.distanceToNextSignal)
+
+    @property
+    def vehicleSpeed(self):
+        return self._vehicleSpeed
+
+    @vehicleSpeed.setter
+    def vehicleSpeed(self, new_value):
+        self._vehicleSpeed = new_value
+        for callback in self._speedObserver:
+            callback(self._vehicleSpeed)
+
+    def speedToGui(self, callback):
+        self._speedObserver.append(callback)
+
+    @property
+    def distanceToNextSignal(self):
+        return self._distanceToNextSignal
+
+    @distanceToNextSignal.setter
+    def distanceToNextSignal(self, new_value):
+        self._distanceToNextSignal = new_value
+        for callback in self._distanceObserver:
+            callback(self._distanceToNextSignal)
+
+    def distanceToGui(self, callback):
+        self._distanceObserver.append(callback)
