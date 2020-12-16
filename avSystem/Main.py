@@ -3,19 +3,25 @@ from avSystem.Car import Car
 from avSystem.SpeedControl import SpeedControl
 import threading
 from tkinter import *
-import time
+import matplotlib.pyplot as plt
+from matplotlib.animation import FuncAnimation
 import enum
 
 
 class TrafficSignalEnum1(enum.Enum):
-    Green = 2
+    Green = 25
     Yellow = 3
-    Red = 25
+    Red = 2
     locationOnRoad = 120
 
 
-# Form signal list
 signalList = [TrafficSignalEnum1]
+
+# graph
+speedDistanceGraph = plt.figure()
+ax1 = speedDistanceGraph.add_subplot(1, 1, 1)
+vehicleSpeedArray = [0]
+distanceToSignalArray = [0]
 
 
 class Main:
@@ -37,19 +43,26 @@ class Main:
         self.guiScreen.title("Autonomous VehicleV")
         # tk.Label(text="Notes 1.0", bg="grey", width="300", height="2").pack()
         Label(text="").pack()
-        self.vehicleSpeedGui = Label(master=self.guiScreen, text= self.currentVehicleSpeedText.format(self.currentVehicleSpeed), width="300", height="2")
+        self.vehicleSpeedGui = Label(master=self.guiScreen,
+                                     text=self.currentVehicleSpeedText.format(self.currentVehicleSpeed), width="300",
+                                     height="2")
         self.vehicleSpeedGui.pack()
-        self.distanceToSignalGui = Label(master=self.guiScreen, text= self.distanceToSignalText.format(self.currentDistanceToSignal), width="300", height="2")
+        self.distanceToSignalGui = Label(master=self.guiScreen,
+                                         text=self.distanceToSignalText.format(self.currentDistanceToSignal),
+                                         width="300", height="2")
         self.distanceToSignalGui.pack()
-        self.locationOfSignalGui = Label(master=self.guiScreen, text= self.locationOfSignalText.format(self.currentDistanceToSignal), width="300",
+        self.locationOfSignalGui = Label(master=self.guiScreen,
+                                         text=self.locationOfSignalText.format(self.currentDistanceToSignal),
+                                         width="300",
                                          height="2")
         self.locationOfSignalGui.pack()
-        self.signalColourGui = Label(master=self.guiScreen, text= self.trafficSignalColourText.format("Start to know"), width="300",
-                                         height="2")
-        self.signalColourGui.pack()
-        self.vehicleStatusGui = Label(master=self.guiScreen, text=self.vehicleStatusText.format("Stopped."),
+        self.signalColourGui = Label(master=self.guiScreen, text=self.trafficSignalColourText.format("Start to know"),
                                      width="300",
                                      height="2")
+        self.signalColourGui.pack()
+        self.vehicleStatusGui = Label(master=self.guiScreen, text=self.vehicleStatusText.format("Stopped."),
+                                      width="300",
+                                      height="2")
         self.vehicleStatusGui.pack()
         self.startButton = Button(master=self.guiScreen, text="Start", height="2", width="30",
                                   command=self.startProgram)
@@ -57,7 +70,6 @@ class Main:
         self.startButton.pack()
         # tk.Button(text="Register").pack()
         self.showGui()
-
 
     def startProgram(self):
         # print("")
@@ -73,13 +85,39 @@ class Main:
         car.speedToGui(self.updateSpeed)
         car.distanceToGui(self.updateDistanceToSignal)
         car.vehicleStatusChange(self.updateVehicleStatus)
+        self.showGraph()
         # trafficSignalThread.join()
         # print("\nDone.")
 
+    def updateGraph(self, i):
+        global speedDistanceGraph, ax1, vehicleSpeedArray, distanceToSignalArray
+        ax1.clear()
+        ax1.plot(distanceToSignalArray, vehicleSpeedArray, '-r')
+        plt.xlabel("Distance to signal (mts)")
+        plt.ylabel("Vehicle speed (km/hr)")
+        plt.title("AV2 Speed vs. Distance graph.")
+
+    def showGraph(self):
+        ani = FuncAnimation(speedDistanceGraph, self.updateGraph, interval=1100)
+        plt.show()
+
     def updateSpeed(self, speed):
+        global vehicleSpeedArray, distanceToSignalArray
+        print("length speed: ", len(vehicleSpeedArray))
+        vehicleSpeedArray.append(round(speed, 2))
+        distanceToSignalArray.append(distanceToSignalArray[len(distanceToSignalArray)-1])
         self.vehicleSpeedGui.config(text=self.currentVehicleSpeedText.format(round(speed, 2)))
 
     def updateDistanceToSignal(self, distance):
+        # TODO
+        # if distanceToSignalArray == 0:
+        #     ani.event_source.
+
+        # handle negative distance
+        global distanceToSignalArray, vehicleSpeedArray
+        print("length distance: ", len(distanceToSignalArray))
+        vehicleSpeedArray.append(vehicleSpeedArray[len(vehicleSpeedArray)-1])
+        distanceToSignalArray.append(round((self.currentDistanceToSignal - distance), 2))
         self.distanceToSignalGui.config(text=self.distanceToSignalText.format(round(distance, 2)))
 
     def updateSignalColor(self, colour):
@@ -93,7 +131,6 @@ class Main:
 
     def showGui(self):
         self.guiScreen.mainloop()
-
 
 
 def main():
