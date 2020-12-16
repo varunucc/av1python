@@ -93,9 +93,9 @@ class Main:
         global speedDistanceGraph, ax1, vehicleSpeedArray, distanceToSignalArray
         ax1.clear()
         ax1.plot(distanceToSignalArray, vehicleSpeedArray, '-r')
-        plt.xlabel("Distance to signal (mts)")
+        plt.xlabel("Distance covered (mts)")
         plt.ylabel("Vehicle speed (km/hr)")
-        plt.title("AV2 Speed vs. Distance graph.")
+        plt.title("Signal located at {}mts".format(self.currentDistanceToSignal))
 
     def showGraph(self):
         ani = FuncAnimation(speedDistanceGraph, self.updateGraph, interval=1100)
@@ -118,7 +118,10 @@ class Main:
         print("length distance: ", len(distanceToSignalArray))
         vehicleSpeedArray.append(vehicleSpeedArray[len(vehicleSpeedArray)-1])
         distanceToSignalArray.append(round((self.currentDistanceToSignal - distance), 2))
-        self.distanceToSignalGui.config(text=self.distanceToSignalText.format(round(distance, 2)))
+        try:
+            self.distanceToSignalGui.config(text=self.distanceToSignalText.format(round(distance, 2)))
+        except Exception as e:
+            print(e)
 
     def updateSignalColor(self, colour):
         self.signalColourGui.config(text=self.trafficSignalColourText.format(colour.name))
