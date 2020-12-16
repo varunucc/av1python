@@ -1,20 +1,38 @@
 import threading
 import time
-import tkinter as tk
+import enum
+
+
+class CarStatusEnums(enum.Enum):
+    notMoving = "Not moving."
+    maintainingSpeed = "Maintaining current speed..."
+    accelerating = "Accelerating..."
+    decelerating = "Slowing down..."
+    stopping = "Stopping..."
+    stopped = "Stopped."
+    within80ButSpeedLessThan30 = "Speed less than 30, accelerating..."
+
 
 vehicleSpeed = 0
 distanceToNextSignal = 0
+vehicleStatus = CarStatusEnums.notMoving
+
 
 class Car(object):
 
     def __init__(self, ts, sp):
-
+        global vehicleStatus
+        self._vehicleStatus = CarStatusEnums.notMoving
         self._vehicleSpeed = 0
+
+        # constant values
         self.topSpeed = 60
         self.haltSpeed = 0
         self.slowDownSpeed = 30
+
         self._speedObserver = []
         self._distanceObserver = []
+        self._vehicleStatusObserver = []
 
         self.speedLimitedTo = self.haltSpeed
         self.trafficSignalColour = ''
@@ -86,33 +104,47 @@ class Car(object):
         print("\nCurrent vehicle speed: {}km/hr".format(round(self.vehicleSpeed, 2)))
 
     def actionAccordingToTrafficSignalColourAndDistance(self):
-        global vehicleSpeed
-        global distanceToNextSignal
+        global vehicleSpeed, distanceToNextSignal, vehicleStatus
         # req Code the actions that the vehicle should perform according to the traffic light color + distance from
         # traffic light (Behavior System).
         # req Ensure that the vehicle slows down before the traffic light and stops
         # before the red traffic signal.
-        if 20 < self.distanceToNextSignal <= 80 and self.vehicleSpeed > 0:
-            if self.vehicleSpeed > self.slowDownSpeed:
+        if 20 < self.distanceToNextSignal <= 80:
+            if self.vehicleSpeed < self.slowDownSpeed:
+                print("\nAccelerating..")
+                self.vehicleStatus = CarStatusEnums.within80ButSpeedLessThan30
+                self.speedLimitedTo = self.slowDownSpeed
+                self.speedControl.calculateAccelerationRateToLimitedSpeed(self.vehicleSpeed, self.speedLimitedTo)
+            elif self.vehicleSpeed > self.slowDownSpeed:
+                print("\nSlowing down")
+                self.vehicleStatus = CarStatusEnums.decelerating
                 self.slowDown()
-            else:
+            elif self.vehicleSpeed == self.slowDownSpeed:
                 print("\nMaintaining speed")
+                self.vehicleStatus = CarStatusEnums.maintainingSpeed
         elif 0 <= self.distanceToNextSignal <= 20:
-            if self.trafficSignalColour == "Red":
+            if self.trafficSignalColour == "Red" or self.trafficSignalColour == "Yellow":
                 # print("Vehicle speed at stop car: ", self.vehicleSpeed)
                 if self.vehicleSpeed > self.haltSpeed:
                     # print("Halt speed now at : ", (self._vehicleSpeed / 3.6))
+                    print("\nStopping")
+                    self.vehicleStatus = CarStatusEnums.stopping
                     self.stopCar()
                 else:
                     print("\nVehicle stopped")
+                    self.vehicleStatus = CarStatusEnums.stopped
                     # stop monitoring speed
                     self._monitorSpeed = False
                     # stop traffic signal
                     self.trafficSignalData.nextSignal()
             else:
+                print("\nAccelerating..")
+                self.vehicleStatus = CarStatusEnums.accelerating
                 self.speedLimitedTo = self.topSpeed
                 self.speedControl.calculateAccelerationRateToLimitedSpeed(self.vehicleSpeed, self.speedLimitedTo)
         elif self.distanceToNextSignal > 80:
+            print("\nAccelerating..")
+            self.vehicleStatus = CarStatusEnums.accelerating
             self.speedLimitedTo = self.topSpeed
             self.speedControl.calculateAccelerationRateToLimitedSpeed(self.vehicleSpeed, self.speedLimitedTo)
         # elif self.distanceToNextSignal < 100 and self.vehicleSpeed == 0:
@@ -124,9 +156,7 @@ class Car(object):
         self.vehicleSpeed = speed
 
     def slowDown(self):
-        global vehicleSpeed
-        global distanceToNextSignal
-        print("\nSlowing down")
+        global vehicleSpeed, distanceToNextSignal
         self.speedControl.accelerating = False
         self.speedControl.decelerating = True
         self.speedLimitedTo = self.slowDownSpeed
@@ -134,9 +164,7 @@ class Car(object):
                                                                   self.distanceToNextSignal - 20)
 
     def stopCar(self):
-        global vehicleSpeed
-        global distanceToNextSignal
-        print("\nStopping")
+        global vehicleSpeed, distanceToNextSignal
         self.speedControl.decelerating = False
         self.speedControl.accelerating = False
         self.speedControl.decelerating = True
@@ -169,3 +197,16 @@ class Car(object):
 
     def distanceToGui(self, callback):
         self._distanceObserver.append(callback)
+
+    @property
+    def vehicleStatus(self):
+        return self._vehicleStatus
+
+    @vehicleStatus.setter
+    def vehicleStatus(self, new_value):
+        self._vehicleStatus = new_value
+        for callback in self._vehicleStatusObserver:
+            callback(self._vehicleStatus)
+
+    def vehicleStatusChange(self, callback):
+        self._vehicleStatusObserver.append(callback)
