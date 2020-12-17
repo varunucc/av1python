@@ -1,7 +1,5 @@
 changedVehicleSpeed = 0
 
-rateOfDeceleration = 2.6
-
 
 class SpeedControl:
     def __init__(self):
@@ -16,7 +14,6 @@ class SpeedControl:
     def calculateDecelerationRateWithinDistance(self, vehicleSpeed, speedLimitedTo, distanceWithin):
         try:
             if distanceWithin > 0 and vehicleSpeed > 0:
-                global rateOfDeceleration
                 # formula: a = vv - u u / 2 s
                 speedLimitedToInMetersPerSecond = speedLimitedTo / 3.6
                 vehicleSpeedInMeterPerSecond = vehicleSpeed / 3.6
