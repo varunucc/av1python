@@ -33,7 +33,7 @@ class TrafficSignal(object):
                 self.currentSignalLight = signalData
                 time.sleep(signalData.value)
 
-    def nextSignal(self):
+    def goToNextSignalAndSetLocation(self):
         # print("\nNext signal called")
         self.signalCounter += 1
         if self.signalCounter < len(self.trafficSignalList):

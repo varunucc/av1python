@@ -8,14 +8,14 @@ from matplotlib.animation import FuncAnimation
 import enum
 
 
-class TrafficSignalEnum1(enum.Enum):
-    Green = 25
-    Yellow = 3
-    Red = 2
-    locationOnRoad = 120
+class TrafficSignalEnum(enum.Enum):
+    Green = 1
+    Yellow = 2
+    Red = 15
+    locationOnRoad = 2
 
 
-signalList = [TrafficSignalEnum1]
+signalList = [TrafficSignalEnum]
 
 # graph
 speedDistanceGraph = plt.figure()
@@ -103,7 +103,7 @@ class Main:
 
     def updateSpeed(self, speed):
         global vehicleSpeedArray, distanceToSignalArray
-        print("length speed: ", len(vehicleSpeedArray))
+        # print("length speed: ", len(vehicleSpeedArray))
         vehicleSpeedArray.append(round(speed, 2))
         distanceToSignalArray.append(distanceToSignalArray[len(distanceToSignalArray)-1])
         self.vehicleSpeedGui.config(text=self.currentVehicleSpeedText.format(round(speed, 2)))
@@ -115,7 +115,7 @@ class Main:
 
         # handle negative distance
         global distanceToSignalArray, vehicleSpeedArray
-        print("length distance: ", len(distanceToSignalArray))
+        # print("length distance: ", len(distanceToSignalArray))
         vehicleSpeedArray.append(vehicleSpeedArray[len(vehicleSpeedArray)-1])
         distanceToSignalArray.append(round((self.currentDistanceToSignal - distance), 2))
         try:

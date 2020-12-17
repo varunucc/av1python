@@ -14,33 +14,49 @@ class SpeedControl:
         self.accelerate(self.rateOfAcceleration, speedLimitedTo, vehicleSpeed)
 
     def calculateDecelerationRateWithinDistance(self, vehicleSpeed, speedLimitedTo, distanceWithin):
-        global rateOfDeceleration
-        # formula: v v = u u + 2 a s
-        speedLimitedToInMetersPerSecond = speedLimitedTo/3.6
-        vehicleSpeedInMeterPerSecond = vehicleSpeed/3.6
-        rateOfDeceleration = (((speedLimitedToInMetersPerSecond**2)-(vehicleSpeedInMeterPerSecond**2))/(2*distanceWithin))
-        self.decelerate(rateOfDeceleration, speedLimitedTo, vehicleSpeed)
+        try:
+            if distanceWithin > 0 and vehicleSpeed > 0:
+                global rateOfDeceleration
+                # formula: a = vv - u u / 2 s
+                speedLimitedToInMetersPerSecond = speedLimitedTo / 3.6
+                vehicleSpeedInMeterPerSecond = vehicleSpeed / 3.6
+                rateOfDeceleration = (((speedLimitedToInMetersPerSecond ** 2) - (vehicleSpeedInMeterPerSecond ** 2)) / (
+                            2 * distanceWithin))
+                self.decelerate(rateOfDeceleration, speedLimitedTo, vehicleSpeed)
+        except Exception as e:
+            if distanceWithin < 0:
+                raise ZeroDivisionError("distanceWithin was <= zero")
+            elif vehicleSpeed < 0:
+                raise ValueError("VehicleSpeed was <= 0")
+            else:
+                raise e
 
-    def accelerate(self, accelerateRate, speedLimitedTo, vehicleSpeed):
+    def accelerate(self, rateOfAcceleration, speedLimitedTo, vehicleSpeed):
         # print("\nAccelerating..")
         # add in km/hr
-        if vehicleSpeed < speedLimitedTo:
-            vehicleSpeed += 3.6 * accelerateRate
-            if vehicleSpeed > speedLimitedTo:
-                vehicleSpeed = speedLimitedTo
-        global changedVehicleSpeed
-        self.changedVehicleSpeed = vehicleSpeed
-        # print("\nSpeed from accelerating: ", self.changedVehicleSpeed)
-
-    def decelerate(self, decelerateRate, speedLimitedTo, vehicleSpeed):
-        # print("\nDecelerating..")
-        # subtract in km/hr
-        if vehicleSpeed > speedLimitedTo:
-            vehicleSpeed += 3.6 * decelerateRate
-            if vehicleSpeed <= speedLimitedTo:
-                vehicleSpeed = speedLimitedTo
+        if rateOfAcceleration > 0:
+            if vehicleSpeed < speedLimitedTo:
+                vehicleSpeed += 3.6 * rateOfAcceleration
+                if vehicleSpeed > speedLimitedTo:
+                    vehicleSpeed = speedLimitedTo
             global changedVehicleSpeed
             self.changedVehicleSpeed = vehicleSpeed
+        else:
+            raise ValueError("acceleration rate was <=0")
+        # print("\nSpeed from accelerating: ", self.changedVehicleSpeed)
+
+    def decelerate(self, rateOfDeceleration, speedLimitedTo, vehicleSpeed):
+        # print("\nDecelerating..")
+        # subtract in km/hr
+        if rateOfDeceleration < 0 and vehicleSpeed > 0:
+            if vehicleSpeed > speedLimitedTo:
+                vehicleSpeed += 3.6 * rateOfDeceleration
+                if vehicleSpeed <= speedLimitedTo:
+                    vehicleSpeed = speedLimitedTo
+                global changedVehicleSpeed
+                self.changedVehicleSpeed = vehicleSpeed
+        else:
+            raise ValueError("deceleration rate cannot be >= 0 or vehicle speed is <= 0")
         # print("\nSpeed from decelerating: ", self.changedVehicleSpeed)
 
     @property

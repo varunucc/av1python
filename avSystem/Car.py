@@ -98,7 +98,7 @@ class Car(object):
         if self.distanceToNextSignal <= 0.1 and round(self.vehicleSpeed) <= 1:
             self.distanceToNextSignal = 0
             self.vehicleSpeed = 0
-            self.trafficSignalData.nextSignal()
+            self.trafficSignalData.goToNextSignalAndSetLocation()
 
         print("\nDistance from signal: {}mts".format(round(self.distanceToNextSignal, 2)))
         print("\nCurrent vehicle speed: {}km/hr".format(round(self.vehicleSpeed, 2)))
@@ -136,7 +136,7 @@ class Car(object):
                     # stop monitoring speed
                     self._monitorSpeed = False
                     # stop traffic signal
-                    self.trafficSignalData.nextSignal()
+                    self.trafficSignalData.goToNextSignalAndSetLocation()
             else:
                 print("\nAccelerating..")
                 self.vehicleStatus = CarStatusEnums.accelerating
