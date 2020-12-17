@@ -14,7 +14,7 @@ class SpeedControl:
     def calculateDecelerationRateWithinDistance(self, vehicleSpeed, speedLimitedTo, distanceWithin):
         try:
             if distanceWithin > 0 and vehicleSpeed > 0:
-                # formula: a = vv - u u / 2 s
+                # formula: a = v v - u u / 2 s
                 speedLimitedToInMetersPerSecond = speedLimitedTo / 3.6
                 vehicleSpeedInMeterPerSecond = vehicleSpeed / 3.6
                 rateOfDeceleration = (((speedLimitedToInMetersPerSecond ** 2) - (vehicleSpeedInMeterPerSecond ** 2)) / (

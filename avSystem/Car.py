@@ -62,7 +62,7 @@ class Car(object):
         # self._speedMonitorThread.join()
 
     def checkTrafficLightColour(self, signalColour):
-        # req Make the car monitor the traffic light color change.
+        # R2 req Make the car monitor the traffic light color change.
         if signalColour.name == "Green":
             print("\nCar sees green signal")
             self.trafficSignalColour = signalColour.name
@@ -78,6 +78,7 @@ class Car(object):
         self.nextTrafficSignalLocationOnRoad = distance
 
     def speedAndDistanceToSignalMonitor(self):
+        # R6 req monitor vehicle speed distance to signal continuously
         while self._monitorSpeed:
             self.checkDistanceToTrafficSignal()
             self.actionAccordingToTrafficSignalColourAndDistance()
@@ -94,7 +95,7 @@ class Car(object):
 
         # next signal
         # print("Distance to signal: {}, vehicle speed: {}".format(self.distanceToNextSignal, self.vehicleSpeed))
-        # req stop vehicle at signal
+        # R5 stop at exact location
         if self.distanceToNextSignal <= 0.1 and round(self.vehicleSpeed) <= 1:
             self.distanceToNextSignal = 0
             self.vehicleSpeed = 0
@@ -107,7 +108,8 @@ class Car(object):
         global vehicleSpeed, distanceToNextSignal, vehicleStatus
         # req Code the actions that the vehicle should perform according to the traffic light color + distance from
         # traffic light (Behavior System).
-        # req Ensure that the vehicle slows down before the traffic light and stops
+        # R1 req acc dec autonomously
+        # R3 req Ensure that the vehicle slows down before the traffic light and stops
         # before the red traffic signal.
         if 20 < self.distanceToNextSignal <= 80:
             if self.vehicleSpeed < self.slowDownSpeed:
@@ -123,6 +125,7 @@ class Car(object):
                 print("\nMaintaining speed")
                 self.vehicleStatus = CarStatusEnums.maintainingSpeed
         elif 0 <= self.distanceToNextSignal <= 20:
+            # R4 req stop vehicle at signal
             if self.trafficSignalColour == "Red" or self.trafficSignalColour == "Yellow":
                 # print("Vehicle speed at stop car: ", self.vehicleSpeed)
                 if self.vehicleSpeed > self.haltSpeed:

@@ -12,7 +12,7 @@ class TrafficSignalEnum(enum.Enum):
     Green = 1
     Yellow = 2
     Red = 30
-    locationOnRoad = 140
+    locationOnRoad = 100
 
 
 signalList = [TrafficSignalEnum]
@@ -105,8 +105,11 @@ class Main:
         global vehicleSpeedArray, distanceToSignalArray
         # print("length speed: ", len(vehicleSpeedArray))
         vehicleSpeedArray.append(round(speed, 2))
-        distanceToSignalArray.append(distanceToSignalArray[len(distanceToSignalArray)-1])
-        self.vehicleSpeedGui.config(text=self.currentVehicleSpeedText.format(round(speed, 2)))
+        # distanceToSignalArray.append(distanceToSignalArray[len(distanceToSignalArray)-1])
+        try:
+            self.vehicleSpeedGui.config(text=self.currentVehicleSpeedText.format(round(speed, 2)))
+        except Exception as e:
+            print(e)
 
     def updateDistanceToSignal(self, distance):
         # TODO
@@ -116,7 +119,7 @@ class Main:
         # handle negative distance
         global distanceToSignalArray, vehicleSpeedArray
         # print("length distance: ", len(distanceToSignalArray))
-        vehicleSpeedArray.append(vehicleSpeedArray[len(vehicleSpeedArray)-1])
+        # vehicleSpeedArray.append(vehicleSpeedArray[len(vehicleSpeedArray)-1])
         distanceToSignalArray.append(round((self.currentDistanceToSignal - distance), 2))
         try:
             self.distanceToSignalGui.config(text=self.distanceToSignalText.format(round(distance, 2)))

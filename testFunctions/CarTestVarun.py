@@ -9,7 +9,7 @@ vehicleStatus = CarStatusEnums.notMoving
 def actionAccordingToTrafficSignalColourAndDistance(vehicleSpeed, distanceToNextSignal, trafficSignalColour):
     # req Code the actions that the vehicle should perform according to the traffic light color + distance from
     # traffic light (Behavior System).
-    # req Ensure that the vehicle slows down before the traffic light and stops
+    # R3 req Ensure that the vehicle slows down before the traffic light and stops
     # before the red traffic signal.
     global topSpeed, slowDownSpeed, haltSpeed, vehicleStatus
     if 20 < distanceToNextSignal <= 80:
