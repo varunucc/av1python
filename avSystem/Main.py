@@ -11,8 +11,8 @@ import enum
 class TrafficSignalEnum(enum.Enum):
     Green = 1
     Yellow = 2
-    Red = 15
-    locationOnRoad = 2
+    Red = 25
+    locationOnRoad = 100
 
 
 signalList = [TrafficSignalEnum]
