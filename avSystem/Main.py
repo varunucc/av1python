@@ -9,9 +9,9 @@ import enum
 
 
 class TrafficSignalEnum(enum.Enum):
-    Green = 1
+    Green = 19
     Yellow = 2
-    Red = 30
+    Red = 1
     locationOnRoad = 100
 
 
@@ -98,7 +98,7 @@ class Main:
         plt.title("Signal located at {}mts".format(self.currentDistanceToSignal))
 
     def showGraph(self):
-        ani = FuncAnimation(speedDistanceGraph, self.updateGraph, interval=1100)
+        ani = FuncAnimation(speedDistanceGraph, self.updateGraph, interval=1000)
         plt.show()
 
     def updateSpeed(self, speed):

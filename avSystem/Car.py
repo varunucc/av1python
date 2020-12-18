@@ -146,7 +146,8 @@ class Car(object):
                 self.speedLimitedTo = self.topSpeed
                 self.speedControl.calculateAccelerationRateToLimitedSpeed(self.vehicleSpeed, self.speedLimitedTo)
         elif self.distanceToNextSignal > 80:
-            if vehicleSpeed < self.topSpeed:
+            # print("VEhicle speed: ", vehicleSpeed)
+            if self.vehicleSpeed < self.topSpeed:
                 print("\nAccelerating..")
                 self.vehicleStatus = CarStatusEnums.accelerating
                 self.speedLimitedTo = self.topSpeed
